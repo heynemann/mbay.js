@@ -4,3 +4,6 @@ test: kill-test
 
 kill-test:
 	@ps aux | egrep SimpleHTTPServer | egrep -v egrep | awk ' { print $$2 } ' | xargs kill -9
+
+compile:
+	@java -jar lib/compiler.jar --js src/mbay.js --js_output_file mbay.min.js
