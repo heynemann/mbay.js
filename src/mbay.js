@@ -1,5 +1,5 @@
 (function(globals, $) {
-    globals.Exploder = function(elementSelector, options) {
+    globals.Exploder = function(element, options) {
         this.options = $.extend({}, this.options, options);
 
         this.alpha = this.options.startingAlpha;
@@ -10,7 +10,7 @@
             parseInt(pointColor.substr(4, 2), 16)
         ];
         this.body = $('body');
-        this.source = $(elementSelector);
+        this.source = element;
     };
 
     globals.Exploder.prototype = {
