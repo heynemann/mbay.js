@@ -25,15 +25,21 @@
             alphaIncrement: 15,
             xVariation: 1.5,
             yVariation: 1,
-            destroySource: true
+            destroySource: true,
+            width: 200,
+            height: 200,
+            onExplodeFinished: null
         },
 
         explode: function() {
             this.canvas = $('<canvas></canvas>');
+            this.canvas.css('position', 'absolute');
+            this.canvas.width(this.options.width);
+            this.canvas.height(this.options.height);
 
             this.body.append(this.canvas);
             var pos = this.source.offset();
-            pos.left -= this.canvas.width() / 2;
+            pos.left -= this.options.width / 2;
             pos.left += this.source.width() / 2;
             pos.top -= this.canvas.height() / 2;
             pos.top += this.source.height() / 2;
@@ -50,13 +56,11 @@
                 this.source.remove();
             }
 
-            var canvasWidth = this.canvas.width();
-            var canvasHeight = this.canvas.height();
-            processing.size(canvasWidth, canvasHeight);
+            processing.size(this.options.width, this.options.height);
             processing.background(255, 0);
 
-            var canvasCenterX = canvasWidth / 2 - this.options.pointRadius;
-            var canvasCenterY = canvasHeight / 2 - this.options.pointRadius;
+            var canvasCenterX = this.options.width / 2 - this.options.pointRadius;
+            var canvasCenterY = this.options.height / 2 - this.options.pointRadius;
 
             var explodingPoints = [];
             for (i=0; i<this.options.seeds; ++i) {
@@ -107,6 +111,9 @@
         finishExplode: function(canvas, processing) {
             this.canvas.remove();
             this.processing.exit();
+            if (this.options.onExplodeFinished) {
+                this.options.onExplodeFinished();
+            }
         }
     };
 
