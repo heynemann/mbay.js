@@ -1,0 +1,39 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+    <title>Index</title>
+    <style>
+        #explode {
+            position: absolute;
+            top: 300px;
+            left: 300px;
+            background-color: #006acf;
+            color: #fff;
+            padding: 5px 10px;
+            font-family: arial;
+            font-weight: bold;
+            font-size: 12px;
+            border: solid 1px #333;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+    <div id="explode">CLICK HERE</div>
+    <script type="text/javascript" charset="utf-8" src="jquery-1.8.0.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="processing-1.4.1.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="mbay.js">
+    </script>
+    <script type="text/javascript" charset="utf-8">
+        $('#explode').click(function(ev) {
+            var exploder = new Exploder('#explode', {
+                pointColor: "#006acf",
+                xVariation: 1.8,
+                yVariation: 0.7,
+                destroySource: true
+            });
+            exploder.explode();
+        });
+    </script>
+</html>
