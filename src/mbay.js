@@ -9,26 +9,40 @@
             parseInt(pointColor.substr(2, 2), 16),
             parseInt(pointColor.substr(4, 2), 16)
         ];
+
+        this.colorDifference = this.colorDiff(this.options.destinationColor, this.pointColor);
         this.body = $('body');
         this.source = element;
     };
 
     globals.Exploder.prototype = {
         options: {
-            duration: 1,
+            speed: 1,
+            alphaSpeed: 1,
             pointRadius: 1,
+            radiusVariation: 5,
             seeds: 500,
             startingPositionVariation: 1,
-            incrementVariation: 2,
             pointColor: "#333333",
             startingAlpha: 255,
-            alphaIncrement: 15,
+            alphaDelay: 0.5,
             xVariation: 1.5,
             yVariation: 1,
             destroySource: true,
             width: 200,
             height: 200,
-            onExplodeFinished: null
+            onExplodeFinished: null,
+            destinationColor: [255, 255, 255]
+        },
+
+        colorDiff: function(c1, c2) {
+            return [c1[0] - c2[0], c1[1]  - c2[1], c1[2] - c2[2]];
+        },
+        colorSum: function(c1, c2) {
+            return [c1[0] + c2[0], c1[1]  + c2[1], c1[2] + c2[2]];
+        },
+        colorMult: function(s, c) {
+            return [s * c[0], s * c[1], s * c[2]];
         },
 
         explode: function() {
@@ -63,47 +77,61 @@
             var canvasCenterY = this.options.height / 2 - this.options.pointRadius;
 
             var explodingPoints = [];
+
             for (i=0; i<this.options.seeds; ++i) {
                 var x = canvasCenterX;
                 var y = canvasCenterY;
                 var angle = Math.random() * 2 * Math.PI;
 
-                var xInc = Math.sin(angle) * this.options.incrementVariation;
-                var yInc = Math.cos(angle) * this.options.incrementVariation;
+                var xInc = Math.sin(angle) * this.options.speed;
+                var yInc = Math.cos(angle) * this.options.speed;
 
-                xInc += (Math.random() * this.options.incrementVariation * 2) - this.options.incrementVariation;
-                yInc += (Math.random() * this.options.incrementVariation * 2) - this.options.incrementVariation;
+                xInc += (Math.random() * this.options.speed * 2) - this.options.speed;
+                yInc += (Math.random() * this.options.speed * 2) - this.options.speed;
 
                 xInc = xInc * this.options.xVariation;
                 yInc = yInc * this.options.yVariation;
 
-                explodingPoints.push({ x: x, y: y, xInc: xInc, yInc: yInc });
+                var randomFactor = Math.random();
+                var newRgb = this.colorSum(this.pointColor, this.colorMult(randomFactor, this.colorDifference));
+
+                var size = (this.options.pointRadius * 2) + (Math.random() * this.options.radiusVariation);
+
+                explodingPoints.push({ x: x, y: y, xInc: xInc, yInc: yInc, color: newRgb, size: size, xOffset: xInc > 0 ? -1 : 1, yOffset: yInc > 0 ? -1 : 1 });
             }
 
+            var delay = 0;
             processing.draw = function() {
+                delay += 1/60;
                 processing.background(255, 0);
 
-                if (this.alpha > 0) {
-                    this.alpha -= this.options.alphaIncrement;
-                } else {
-                    this.finishExplode();
+                if (delay > this.options.alphaDelay) {
+                    if (this.alpha > 0) {
+                        this.alpha -= this.options.alphaSpeed;
+                    } else {
+                        this.finishExplode();
+                    }
                 }
 
-                processing.fill(this.pointColor[0], this.pointColor[1], this.pointColor[2], this.alpha);
                 processing.noStroke();
 
                 for (i=0; i<explodingPoints.length; ++i) {
                     var point = explodingPoints[i];
+                    processing.fill(point.color[0], point.color[1], point.color[2], this.alpha);
 
                     processing.ellipse(
                         point.x,
                         point.y,
-                        this.options.pointRadius * 2,
-                        this.options.pointRadius * 2
+                        point.size,
+                        point.size
                     );
 
-                    point.x += (point.xInc / this.options.duration);
-                    point.y += (point.yInc / this.options.duration);
+                    var incrementX = point.xInc * this.options.speed / 60;
+                    var incrementY = point.yInc * this.options.speed / 60;
+                    point.x += incrementX;
+                    point.y += incrementY;
+                    point.xInc += point.xOffset * 0.05;
+                    point.yInc += point.yOffset * 0.05;
                 }
             }.bind(this);
         },
