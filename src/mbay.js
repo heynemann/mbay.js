@@ -32,7 +32,8 @@
             width: 200,
             height: 200,
             onExplodeFinished: null,
-            destinationColor: [255, 255, 255]
+            destinationColor: [255, 255, 255],
+            minAlpha: 0
         },
 
         colorDiff: function(c1, c2) {
@@ -106,7 +107,7 @@
                 processing.background(255, 0);
 
                 if (delay > this.options.alphaDelay) {
-                    if (this.alpha > 0) {
+                    if (this.alpha > this.options.minAlpha) {
                         this.alpha -= this.options.alphaSpeed;
                     } else {
                         this.finishExplode();
