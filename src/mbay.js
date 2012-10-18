@@ -3,14 +3,7 @@
         this.options = $.extend({}, this.options, options);
 
         this.alpha = this.options.startingAlpha;
-        var pointColor = this.options.pointColor.replace(/#/, '');
-        this.pointColor = [
-            parseInt(pointColor.substr(0, 2), 16),
-            parseInt(pointColor.substr(2, 2), 16),
-            parseInt(pointColor.substr(4, 2), 16)
-        ];
-
-        this.colorDifference = this.colorDiff(this.options.destinationColor, this.pointColor);
+        this.setPointColor(this.options.pointColor);
         this.body = $('body');
         this.source = element;
     };
@@ -44,6 +37,17 @@
         },
         colorMult: function(s, c) {
             return [s * c[0], s * c[1], s * c[2]];
+        },
+
+        setPointColor: function(pointColor) {
+            pointColor = pointColor.replace(/#/, '');
+            this.pointColor = [
+                parseInt(pointColor.substr(0, 2), 16),
+                parseInt(pointColor.substr(2, 2), 16),
+                parseInt(pointColor.substr(4, 2), 16)
+            ];
+
+            this.colorDifference = this.colorDiff(this.options.destinationColor, this.pointColor);
         },
 
         explode: function() {
